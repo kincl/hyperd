@@ -6,9 +6,9 @@ License:            Apache License, Version 2.0
 Group:              System Environment/Base
 Source0:            http://wiki.qemu-project.org/download/qemu-2.4.1.tar.bz2
 URL:                https://qemu-project.org
-ExclusiveArch:      x86_64
+ExclusiveArch:      ppc64le
 Requires:           librbd1
-BuildRequires:      libcap-devel,libattr-devel,librbd1-devel
+BuildRequires:      libcap-devel,libattr-devel
 
 # enable full pathname hostmem backend file (for access saved memory)
 Patch1: 0001-backends-hostmem-file-Allow-to-specify-full-pathname.patch
@@ -57,7 +57,7 @@ Patch34: 0034-9pfs-local-drop-unused-code.patch
 
 %description
 Qemu is the powerful and popular Hardware emulator
-Hyper build is for x86_64 arch and enable virtfs and rbd support
+Hyper build is for ppc64le arch and enable virtfs and rbd support
 
 %prep
 %setup -n qemu-2.4.1
@@ -99,28 +99,20 @@ Hyper build is for x86_64 arch and enable virtfs and rbd support
 
 %build
 cd %{_builddir}/qemu-2.4.1
-./configure --prefix=/usr --enable-virtfs --enable-rbd --disable-fdt --disable-vnc  --disable-guest-agent --disable-gtk --disable-sdl --audio-drv-list="" --disable-tpm --target-list=x86_64-softmmu
+./configure --prefix=/usr --enable-virtfs --disable-vnc  --disable-guest-agent --disable-gtk --disable-sdl --audio-drv-list="" --disable-tpm --target-list=ppc64-softmmu
 make
 
 %install
 %make_install
 
+ln -s %{_bindir}/qemu-system-ppc64 %{_bindir}/qemu-system-ppc64le
+
 %clean
 #rm -rf %{buildroot}
 
 %files
-%{_bindir}/qemu-system-x86_64
-%{_datadir}/qemu/bios-256k.bin
-%{_datadir}/qemu/efi-virtio.rom
-%{_datadir}/qemu/kvmvapic.bin
-%{_datadir}/qemu/linuxboot.bin
+%{_bindir}
+%{_libexecdir}
+%{_datadir}
 
 %changelog
-* Fri Mar 3 2017 Hyper Dev Team <dev@hyper.sh> - 2.4.1-3
-- template
-- backport fix for cve-2016-9602
-* Fri Jan 29 2016 Hyper Dev Team <dev@hyper.sh> - 2.4.1-2
-- Include virtio firmware
-- Include librbd dependency
-* Wed Dec 2 2015 Xu Wang <xu@hyper.sh> - 2.4.1-1
-- config with virtfs and rbd
